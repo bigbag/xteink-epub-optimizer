@@ -12,6 +12,16 @@ let Module = null;
 let renderer = null;
 
 /**
+ * Destroy renderer and free WASM memory
+ */
+function destroyRenderer() {
+    if (renderer) {
+        renderer.delete();  // Emscripten destructor - frees WASM heap
+        renderer = null;
+    }
+}
+
+/**
  * Initialize CREngine WASM module
  */
 async function initWasm() {
@@ -35,6 +45,7 @@ function createRenderer(width, height) {
     if (!Module) {
         throw new Error('WASM module not initialized. Call initWasm() first.');
     }
+    destroyRenderer();  // Clean up existing renderer before creating new one
     renderer = new Module.EpubRenderer(width, height);
 
     // Disable built-in status bar
@@ -226,9 +237,7 @@ function getOutputPath(inputPath, outputDir, format) {
  * Cleanup renderer resources
  */
 function cleanup() {
-    if (renderer) {
-        renderer = null;
-    }
+    destroyRenderer();
 }
 
 module.exports = {
