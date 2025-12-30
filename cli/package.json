@@ -1,0 +1,28 @@
+{
+  "name": "epub-to-xtc",
+  "version": "1.0.0",
+  "description": "CLI tool for converting EPUB files to XTC/XTCH format for Xteink e-readers",
+  "main": "index.js",
+  "bin": {
+    "epub-to-xtc": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "epub",
+    "xtc",
+    "xtch",
+    "xteink",
+    "e-reader",
+    "converter"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "jszip": "^3.10.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

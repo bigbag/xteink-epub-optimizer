@@ -1,6 +1,6 @@
 # EPUB to XTC Converter & Optimizer
 
-A browser-based tool for converting EPUB files to XTC/XTCH format and optimizing EPUBs for e-ink readers.
+A tool for converting EPUB files to XTC/XTCH format and optimizing EPUBs for e-ink readers. Available as a browser-based web app and Node.js CLI.
 
 **[Live Demo](https://liashkov.site/epub-to-xtc-converter/)**
 
@@ -60,6 +60,42 @@ A browser-based tool for converting EPUB files to XTC/XTCH format and optimizing
 - Configure optimization options
 - Click "Optimize EPUBs" to download optimized files
 
+### CLI Usage
+
+For batch processing without a browser, use the Node.js CLI:
+
+```bash
+cd cli
+npm install
+
+# Generate default settings file
+node index.js init
+
+# Edit settings.json to set font.path to your TTF/OTF font file
+
+# Convert single file
+node index.js convert book.epub -o book.xtc -c settings.json
+
+# Convert all EPUBs in a directory
+node index.js convert ./epubs/ -o ./output/ -c settings.json
+
+# Use XTCH format (2-bit grayscale)
+node index.js convert book.epub -f xtch -c settings.json
+```
+
+Example `settings.json`:
+```json
+{
+  "device": "xteink-x4",
+  "font": { "path": "./LiterataTT.ttf", "size": 34, "weight": 400 },
+  "margins": { "left": 16, "top": 16, "right": 16, "bottom": 16 },
+  "lineHeight": 120,
+  "textAlign": "justify",
+  "hyphenation": { "enabled": true, "language": "en" },
+  "output": { "format": "xtc", "dithering": true, "ditherStrength": 0.7 }
+}
+```
+
 ## XTC/XTCH Format
 
 - **XTC**: 1-bit monochrome pages (fast rendering, smaller files)
@@ -96,30 +132,42 @@ Then open http://localhost:8000 in your browser.
 
 ```
 /
-├── web/
-│   ├── index.html          # Main HTML structure
-│   ├── style.css           # Application styles
-│   ├── app.js              # Main application logic
-│   ├── crengine.js         # CREngine WASM loader
-│   ├── crengine.wasm       # CREngine binary (CoolReader engine)
-│   └── dither-worker.js    # Web Worker for Floyd-Steinberg dithering
+├── web/                        # Browser-based web app
+│   ├── index.html              # Main HTML structure
+│   ├── style.css               # Application styles
+│   ├── app.js                  # Main application logic
+│   ├── crengine.js             # CREngine WASM loader
+│   ├── crengine.wasm           # CREngine binary (CoolReader engine)
+│   └── dither-worker.js        # Web Worker for Floyd-Steinberg dithering
+├── cli/                        # Node.js CLI tool
+│   ├── index.js                # CLI entry point
+│   ├── converter.js            # WASM integration and conversion logic
+│   ├── encoder.js              # XTG/XTH/XTC format encoding
+│   ├── dither.js               # Floyd-Steinberg dithering
+│   ├── settings.js             # Settings management
+│   └── package.json            # CLI dependencies
 ├── docs/
-│   └── xtc-format-spec.md  # XTC format specification
+│   └── xtc-format-spec.md      # XTC format specification
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml      # GitHub Pages deployment
+│       └── deploy.yml          # GitHub Pages deployment
 ├── LICENSE
 └── README.md
 ```
 
 ## Dependencies
 
+### Web App
 - [JSZip](https://stuk.github.io/jszip/) - ZIP file handling (loaded from CDN)
 - CREngine - EPUB rendering (bundled as WASM)
-
-Fonts (loaded on demand from Google Fonts):
-- Literata, Lora, Merriweather, Source Serif 4, Noto Serif, Noto Sans, Open Sans, Roboto, EB Garamond, Crimson Pro
+- Google Fonts (loaded on demand): Literata, Lora, Merriweather, Source Serif 4, Noto Serif, Noto Sans, Open Sans, Roboto, EB Garamond, Crimson Pro
 - Custom TTF/OTF font upload also supported
+
+### CLI
+- Node.js 18+
+- [Commander](https://github.com/tj/commander.js) - CLI framework
+- [JSZip](https://stuk.github.io/jszip/) - ZIP file handling
+- CREngine WASM (shared with web app)
 
 ## Browser Support
 
