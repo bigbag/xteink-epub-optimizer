@@ -129,6 +129,38 @@ src/
 EPUB → epub_parser.py → pagination.py → text_renderer.py → xtc_format.py → XTC/XTCH
 ```
 
+## Testing
+
+Run tests with pytest:
+
+```bash
+# Run all tests with coverage
+make test
+
+# Run specific test file
+PYTHONPATH=.:src pytest tests/test_config.py -v
+
+# Run tests matching pattern
+PYTHONPATH=.:src pytest -k "test_sanitize" -v
+```
+
+The test suite covers:
+- **config.py**: Constants, heading size calculations
+- **epub_utils.py**: OPF finding, namespace handling
+- **optimizer.py**: CSS sanitization, manifest operations, font removal, image processing, EPUB rebuild
+- **xtc_format.py**: Binary encoding, quantization, container writing
+- **epub_parser.py**: HTML parsing, metadata extraction, TOC parsing
+- **text_renderer.py**: Font handling, text wrapping
+- **pagination.py**: Page layout, chapter detection
+- **converter.py**: End-to-end conversion, CLI argument handling, directory processing
+
+### Test Fixtures
+
+Test fixtures in `tests/fixtures/` include:
+- Minimal valid EPUB structure (container.xml, content.opf, chapter1.xhtml)
+- NCX and NAV navigation files
+- Generated test images (grayscale, color)
+
 ## Documentation
 
 - [XTC/XTG/XTH/XTCH Format Specification](docs/xtc-format-spec.md) ([source](https://gist.github.com/CrazyCoder/b125f26d6987c0620058249f59f1327d))

@@ -18,7 +18,7 @@ PYTHON_VERSION=3.12
 PYTHONPATH := $(or ${PYTHONPATH},.)
 TEST_DIR = tests/
 
-LINT_SOURCES_PATHS = src/
+LINT_SOURCES_PATHS = src/ tests/
 
 export PYTHONPATH
 
@@ -169,10 +169,10 @@ clean:  ## Clear temporary information
 ####################
 
 .PHONY: test
-## Run all tests
+## Run all tests with coverage
 test:
 	PYTHONPATH=$(PYTHONPATH):src \
-	$(PYTHON) -m pytest --disable-warnings $(TEST_DIR)
+	$(PYTHON) -m pytest --cov=src --cov-report=term-missing --cov-report=html $(TEST_DIR)
 
 
 #################################################################################
