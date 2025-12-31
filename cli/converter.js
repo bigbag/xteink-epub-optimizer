@@ -48,9 +48,6 @@ function createRenderer(width, height) {
     destroyRenderer();  // Clean up existing renderer before creating new one
     renderer = new Module.EpubRenderer(width, height);
 
-    // Disable built-in status bar
-    renderer.configureStatusBar(false, false, false, false, false, false, false, false, false);
-
     return renderer;
 }
 
@@ -88,6 +85,9 @@ async function loadEpub(epubPath) {
 
     try {
         renderer.loadEpubFromMemory(ptr, epubData.length);
+
+        // Disable built-in status bar (must be after loading document)
+        renderer.configureStatusBar(false, false, false, false, false, false, false, false, false);
     } finally {
         Module.freeMemory(ptr);
     }
