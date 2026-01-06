@@ -1515,8 +1515,8 @@ function encodeXTG(imageData) {
             var srcIdx = (y * width + x) * 4;
             var gray = data[srcIdx]; // Already grayscale after dithering
 
-            if (gray < 128) {
-                // Black pixel - set bit
+            if (gray >= 128) {
+                // White pixel - set bit (per XTG spec: 0=black, 1=white)
                 var byteIdx = y * rowBytes + Math.floor(x / 8);
                 var bitIdx = 7 - (x % 8); // MSB first
                 bitmap[byteIdx] |= (1 << bitIdx);
