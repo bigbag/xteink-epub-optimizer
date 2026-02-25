@@ -125,16 +125,20 @@ Clone the repository and serve the web directory:
 
 ```bash
 git clone https://github.com/bigbag/epub-optimizer-xteink.git
-cd epub-optimizer-xteink/web
+cd epub-optimizer-xteink
+
+# Using Docker
+make docker-serve              # http://localhost:8000
+make docker-serve PORT=3000    # custom port
 
 # Using Python
-python -m http.server 8000
+cd web && python -m http.server 8000
 
 # Using Node.js
-npx serve .
+cd web && npx serve .
 
 # Using PHP
-php -S localhost:8000
+cd web && php -S localhost:8000
 ```
 
 Then open http://localhost:8000 in your browser.

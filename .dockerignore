@@ -1,0 +1,10 @@
+.git
+cli
+docs
+CLAUDE.md
+LICENSE
+README.md
+Makefile
+Dockerfile
+.dockerignore
+.github

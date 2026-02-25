@@ -1,6 +1,8 @@
 # Makefile for EPUB to XTC Converter & Optimizer
 
-.PHONY: all serve tag help
+.PHONY: all serve docker-serve tag help
+
+PORT ?= 8000
 
 # Default target
 all: help
@@ -10,6 +12,11 @@ all: help
 serve: ## Run local web server (http://localhost:8000)
 	@echo "Starting server at http://localhost:8000"
 	@cd web && python3 -m http.server 8000
+
+docker-serve: ## Run in Docker (Ctrl+C to stop). Usage: make docker-serve [PORT=8000]
+	@docker build -t epub-to-xtc .
+	@echo "Running at http://localhost:$(PORT) (Ctrl+C to stop)"
+	@docker run --rm -p $(PORT):8000 epub-to-xtc
 
 ## Release:
 
