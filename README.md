@@ -81,7 +81,15 @@ node index.js convert ./epubs/ -o ./output/ -c settings.json
 
 # Use XTCH format (2-bit grayscale)
 node index.js convert book.epub -f xtch -c settings.json
+
+# Optimize single EPUB for e-paper
+node index.js optimize book.epub -o book_optimized.epub -c settings.json
+
+# Optimize all EPUBs in a directory
+node index.js optimize ./epubs/ -o ./output/ -c settings.json
 ```
+
+Optimization options are configured in `settings.json` under the `optimizer` section. Set `recursive` to `true` to process subdirectories; use `include`/`exclude` glob patterns to filter files.
 
 Example `settings.json`:
 ```json
@@ -92,7 +100,17 @@ Example `settings.json`:
   "lineHeight": 120,
   "textAlign": "justify",
   "hyphenation": { "enabled": true, "language": "en" },
-  "output": { "format": "xtc", "dithering": true, "ditherStrength": 0.7 }
+  "output": { "format": "xtc", "dithering": true, "ditherStrength": 0.7 },
+  "optimizer": {
+    "removeCss": true,
+    "stripFonts": true,
+    "grayscale": true,
+    "maxImageWidth": 480,
+    "injectCss": true,
+    "recursive": false,
+    "include": "*.epub",
+    "exclude": null
+  }
 }
 ```
 
@@ -159,6 +177,7 @@ Then open http://localhost:8000 in your browser.
 │   ├── converter.js            # WASM integration and conversion logic
 │   ├── encoder.js              # XTG/XTH/XTC format encoding
 │   ├── dither.js               # Floyd-Steinberg dithering
+│   ├── optimizer.js            # EPUB optimizer for e-paper
 │   ├── settings.js             # Settings management
 │   └── package.json            # CLI dependencies
 ├── docs/
@@ -182,6 +201,8 @@ Then open http://localhost:8000 in your browser.
 - Node.js 18+
 - [Commander](https://github.com/tj/commander.js) - CLI framework
 - [JSZip](https://stuk.github.io/jszip/) - ZIP file handling
+- [sharp](https://sharp.pixelplumbing.com/) - Image processing (optimizer)
+- [minimatch](https://github.com/isaacs/minimatch) - Glob pattern matching (optimizer)
 - CREngine WASM (shared with web app)
 
 ## Browser Support

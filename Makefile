@@ -1,6 +1,6 @@
 # Makefile for EPUB to XTC Converter & Optimizer
 
-.PHONY: all serve docker-serve tag help
+.PHONY: all serve docker-serve cli-install cli-convert cli-optimize tag help
 
 PORT ?= 8000
 
@@ -17,6 +17,17 @@ docker-serve: ## Run in Docker (Ctrl+C to stop). Usage: make docker-serve [PORT=
 	@docker build -t epub-to-xtc .
 	@echo "Running at http://localhost:$(PORT) (Ctrl+C to stop)"
 	@docker run --rm -p $(PORT):8000 epub-to-xtc
+
+## CLI:
+
+cli-install: ## Install CLI dependencies
+	@cd cli && npm install
+
+cli-convert: ## Convert EPUB to XTC. Usage: make cli-convert INPUT=book.epub OUTPUT=book.xtc CONFIG=settings.json
+	@cd cli && node index.js convert $(INPUT) -o $(OUTPUT) -c $(CONFIG)
+
+cli-optimize: ## Optimize EPUB for e-paper. Usage: make cli-optimize INPUT=book.epub OUTPUT=optimized.epub CONFIG=settings.json
+	@cd cli && node index.js optimize $(INPUT) -o $(OUTPUT) -c $(CONFIG)
 
 ## Release:
 

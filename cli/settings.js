@@ -47,6 +47,16 @@ const DEFAULT_SETTINGS = {
         dithering: true,
         ditherStrength: 0.7,
         negative: false
+    },
+    optimizer: {
+        removeCss: true,
+        stripFonts: true,
+        grayscale: true,
+        maxImageWidth: 480,
+        injectCss: true,
+        recursive: false,
+        include: '*.epub',
+        exclude: null
     }
 };
 
@@ -136,7 +146,27 @@ function validateSettings(settings) {
         errors.push(`Invalid output format: ${settings.output.format}. Must be 'xtc' or 'xtch'`);
     }
 
+    validateOptimizerFields(settings, errors);
+
     return errors;
+}
+
+/**
+ * Validate optimizer-specific settings (no font.path required)
+ */
+function validateOptimizerSettings(settings) {
+    const errors = [];
+    validateOptimizerFields(settings, errors);
+    return errors;
+}
+
+function validateOptimizerFields(settings, errors) {
+    if (settings.optimizer) {
+        if (settings.optimizer.maxImageWidth !== undefined &&
+            (settings.optimizer.maxImageWidth < 1 || settings.optimizer.maxImageWidth > 2048)) {
+            errors.push('optimizer.maxImageWidth must be between 1 and 2048');
+        }
+    }
 }
 
 /**
@@ -153,5 +183,6 @@ module.exports = {
     loadSettings,
     resolveSettings,
     validateSettings,
+    validateOptimizerSettings,
     generateDefaultConfig
 };
