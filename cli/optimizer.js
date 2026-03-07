@@ -283,7 +283,7 @@ async function optimizeEpub(inputPath, outputPath, options) {
         if (options.processImages && /\.(jpg|jpeg|png|bmp)$/i.test(filePath)) {
             const imgData = await zipFile.async('nodebuffer');
             const processed = await processImage(imgData, options.maxImageWidth, options.grayscale);
-            if (processed && processed.length < imgData.length) {
+            if (processed) {
                 // Output is always JPEG — rename non-JPEG files to avoid content-type mismatch
                 if (/\.(png|bmp)$/i.test(filePath)) {
                     const jpegPath = filePath.replace(/\.[^.]+$/, '.jpg');
@@ -292,6 +292,8 @@ async function optimizeEpub(inputPath, outputPath, options) {
                     imageRenames[filePath] = jpegPath;
                     ops.push({ type: 'convertImage', file: filePath, to: jpegPath });
                 } else {
+                    // Always replace JPEGs — device requires baseline encoding
+                    // (progressive and arithmetic JPEGs are re-encoded to baseline by Sharp)
                     epubZip.file(filePath, processed);
                     ops.push({ type: 'processImage', file: filePath });
                 }

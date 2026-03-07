@@ -31,7 +31,7 @@ A tool for converting EPUB files to XTC/XTCH format and optimizing EPUBs for e-i
   - Resize images to configurable max width/height
   - Flatten alpha transparency to white background
   - Skip tiny decorative images (<20px)
-  - Only replace images when processed version is smaller
+  - Re-encode images to baseline JPEG (required by e-paper devices)
 - Remove unsupported image formats (SVG, WebP, TIFF)
 - Inject e-paper optimized CSS
 - Batch processing with ZIP export

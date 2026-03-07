@@ -1814,7 +1814,7 @@ async function optimizeEpub(file) {
         if (settings.processImages && /\.(jpg|jpeg|png|bmp|gif)$/i.test(path)) {
             var imgData = await zipFile.async('arraybuffer');
             var processedImg = await processImage(imgData, settings.maxWidth, settings.grayscale);
-            if (processedImg && processedImg.byteLength < imgData.byteLength) {
+            if (processedImg) {
                 epubZip.file(path, processedImg);
             }
         }
