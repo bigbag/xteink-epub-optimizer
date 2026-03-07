@@ -215,6 +215,11 @@ input[type="range"]::-webkit-slider-thumb {
     margin: 0;
 }
 
+.checkbox-group input[type="checkbox"]:disabled + label,
+.control-group:has(input:disabled) label {
+    opacity: 0.4;
+}
+
 /* Checkbox row for multiple checkboxes */
 .checkbox-row {
     display: flex;

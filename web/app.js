@@ -813,6 +813,23 @@ function setupSettings() {
                document.getElementById('maxImageWidthNum'),
                'maxImageWidthValue');
 
+    // Toggle dependent image controls when processImages changes
+    var optProcessImages = document.getElementById('optProcessImages');
+    var imageSubControls = [
+        document.getElementById('optGrayscale'),
+        document.getElementById('optRemoveUnsupported'),
+        document.getElementById('maxImageWidth'),
+        document.getElementById('maxImageWidthNum')
+    ];
+    function updateImageSubControls() {
+        var enabled = optProcessImages.checked;
+        for (var i = 0; i < imageSubControls.length; i++) {
+            imageSubControls[i].disabled = !enabled;
+        }
+    }
+    optProcessImages.addEventListener('change', updateImageSubControls);
+    updateImageSubControls();
+
     // Status bar sliders (render-only, no applySettings needed)
     syncInputsRenderOnly(statusFontSize, statusFontSizeNum, 'statusFontSizeValue');
     syncInputsRenderOnly(statusEdgeMargin, statusEdgeMarginNum, 'statusEdgeMarginValue');
@@ -1744,6 +1761,8 @@ async function optimizeEpub(file) {
     var settings = {
         removeCss: document.getElementById('optRemoveCss').checked,
         stripFonts: document.getElementById('optStripFonts').checked,
+        processImages: document.getElementById('optProcessImages').checked,
+        removeUnsupportedImages: document.getElementById('optRemoveUnsupported').checked,
         grayscale: document.getElementById('optGrayscale').checked,
         maxWidth: parseInt(document.getElementById('maxImageWidth').value),
         injectCss: document.getElementById('optInjectCss').checked
@@ -1785,11 +1804,17 @@ async function optimizeEpub(file) {
             epubZip.file(path, html);
         }
 
+        // Remove unsupported image formats (can't reliably process in browser, won't display on device)
+        if (settings.processImages && settings.removeUnsupportedImages && /\.(svg|webp|tiff?)$/i.test(path)) {
+            epubZip.remove(path);
+            continue;
+        }
+
         // Process images
-        if (settings.grayscale && /\.(jpg|jpeg|png|gif)$/i.test(path)) {
+        if (settings.processImages && /\.(jpg|jpeg|png|bmp|gif)$/i.test(path)) {
             var imgData = await zipFile.async('arraybuffer');
             var processedImg = await processImage(imgData, settings.maxWidth, settings.grayscale);
-            if (processedImg) {
+            if (processedImg && processedImg.byteLength < imgData.byteLength) {
                 epubZip.file(path, processedImg);
             }
         }
@@ -1847,6 +1872,9 @@ async function processImage(imgData, maxWidth, toGrayscale) {
         var blob = new Blob([imgData]);
         var img = new Image();
         img.onload = function() {
+            // Skip tiny decorative images
+            if (img.width < 20 || img.height < 20) { resolve(null); return; }
+
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
 
@@ -1859,8 +1887,20 @@ async function processImage(imgData, maxWidth, toGrayscale) {
                 width = maxWidth;
             }
 
+            // Constrain height to device decode limit
+            var maxHeight = 3072;
+            if (height > maxHeight) {
+                width = Math.round(width * (maxHeight / height));
+                height = maxHeight;
+            }
+
             canvas.width = width;
             canvas.height = height;
+
+            // Flatten alpha to white background (matches CLI behavior)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
             ctx.drawImage(img, 0, 0, width, height);
 
             // Convert to grayscale if enabled

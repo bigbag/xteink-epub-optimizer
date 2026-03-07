@@ -26,8 +26,13 @@ A tool for converting EPUB files to XTC/XTCH format and optimizing EPUBs for e-i
 - Optimize EPUB files for e-ink readers
 - Remove problematic CSS (floats, flex, grid, fixed positioning)
 - Strip embedded fonts to reduce file size
-- Convert images to grayscale
-- Resize images to configurable max width
+- Image processing (toggleable):
+  - Convert images to grayscale
+  - Resize images to configurable max width/height
+  - Flatten alpha transparency to white background
+  - Skip tiny decorative images (<20px)
+  - Only replace images when processed version is smaller
+- Remove unsupported image formats (SVG, WebP, TIFF)
 - Inject e-paper optimized CSS
 - Batch processing with ZIP export
 
@@ -57,7 +62,8 @@ A tool for converting EPUB files to XTC/XTCH format and optimizing EPUBs for e-i
 
 ### Optimizer Tab
 - Drop EPUBs and switch to the Optimizer tab
-- Configure optimization options
+- Configure optimization options (CSS removal, font stripping, image processing, unsupported format removal, CSS injection)
+- Image sub-controls (grayscale, max width, unsupported format removal) are disabled when "Process images" is unchecked
 - Click "Optimize EPUBs" to download optimized files
 
 ### CLI Usage
@@ -87,9 +93,14 @@ node index.js optimize book.epub -o book_optimized.epub -c settings.json
 
 # Optimize all EPUBs in a directory
 node index.js optimize ./epubs/ -o ./output/ -c settings.json
+
+# Optimize recursively (set "recursive": true in settings.json optimizer section)
+node index.js optimize ./library/ -o ./optimized/ -c settings.json
 ```
 
-Optimization options are configured in `settings.json` under the `optimizer` section. Set `recursive` to `true` to process subdirectories; use `include`/`exclude` glob patterns to filter files.
+Optimization options are configured in `settings.json` under the `optimizer` section:
+- Set `recursive` to `true` to process subdirectories (preserves directory structure in output)
+- Use `include`/`exclude` glob patterns to filter files (e.g., `"exclude": "*_optimized.epub"`)
 
 Example `settings.json`:
 ```json
@@ -104,6 +115,8 @@ Example `settings.json`:
   "optimizer": {
     "removeCss": true,
     "stripFonts": true,
+    "processImages": true,
+    "removeUnsupportedImages": true,
     "grayscale": true,
     "maxImageWidth": 480,
     "injectCss": true,

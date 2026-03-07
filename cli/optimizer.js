@@ -226,7 +226,7 @@ async function optimizeEpub(inputPath, outputPath, options) {
         }
 
         // Remove unsupported image formats (GIF, SVG, WebP, TIFF)
-        if (/\.(gif|svg|webp|tiff?)$/i.test(filePath)) {
+        if (options.removeUnsupportedImages && /\.(gif|svg|webp|tiff?)$/i.test(filePath)) {
             // Try to convert to JPEG via sharp, remove if conversion fails
             try {
                 const imgData = await zipFile.async('nodebuffer');
@@ -280,7 +280,7 @@ async function optimizeEpub(inputPath, outputPath, options) {
         }
 
         // Process supported images (JPEG, PNG, BMP)
-        if ((options.grayscale || options.maxImageWidth) && /\.(jpg|jpeg|png|bmp)$/i.test(filePath)) {
+        if (options.processImages && /\.(jpg|jpeg|png|bmp)$/i.test(filePath)) {
             const imgData = await zipFile.async('nodebuffer');
             const processed = await processImage(imgData, options.maxImageWidth, options.grayscale);
             if (processed && processed.length < imgData.length) {

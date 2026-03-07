@@ -51,10 +51,12 @@ const DEFAULT_SETTINGS = {
     optimizer: {
         removeCss: true,
         stripFonts: true,
+        processImages: true,
+        removeUnsupportedImages: true,
         grayscale: true,
         maxImageWidth: 480,
         injectCss: true,
-        recursive: false,
+        recursive: true,
         include: '*.epub',
         exclude: null
     }
